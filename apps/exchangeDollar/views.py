@@ -3,14 +3,19 @@ from django.conf import settings
 from django.http import JsonResponse
 from datetime import datetime, timedelta
 from .models import ExchangeRate
-from decimal import Decimal
 
-# def mxn2usd(request):
-    # importar el serializer para manipular la bd
-    
-# def usd2mxn(request):
-    # importar el serializer para manipular la bd
-    
+def mxn2usd(request):
+    exchanges = ExchangeRate.objects.values('mxn_to_usd', 'date')
+    data = list(exchanges)
+    data_fix = [{'fecha': d.pop('date'), **d} for d in data]
+    return JsonResponse({'error': 'ninguno', 'status': 200, 'data': data_fix}, safe=False)
+
+def usd2mxn(request):
+    exchanges = ExchangeRate.objects.values('usd_to_mxn', 'date')
+    data = list(exchanges)
+    data_fix = [{'fecha': d.pop('date'), **d} for d in data]
+    return JsonResponse({'error': 'ninguno', 'status': 200, 'data': data_fix}, safe=False)
+
 def consumirApi(request):
     url = settings.URL_API
     fecha = datetime.now().date()
@@ -23,13 +28,7 @@ def consumirApi(request):
 
         if(response.status_code == 200):
             data = response.json()
-            # importar data en BD
-            # for exchange in data['bmx']['series'][0]['datos']:
-            #     print(exchange['fecha'])
-            #     print(exchange['dato'])
-            #     ExchangeRate(date=exchange['fecha'], usd_to_mxn=exchange['dato'], mxn_to_usd=1 / exchange['dato'])
-            # VALIDAR QUE NO EXISTAN LOS MISMOS REGISTROS EN LA BD
-            exchanges = [ExchangeRate(date=datetime.strptime(exchange['fecha'], "%d/%m/%Y").date(), usd_to_mxn=exchange['dato'], mxn_to_usd=1 / Decimal(exchange['dato'])) for exchange in data['bmx']['series'][0]['datos']]
+            exchanges = [ExchangeRate(date=datetime.strptime(exchange['fecha'], "%d/%m/%Y").date(), usd_to_mxn=exchange['dato'], mxn_to_usd=1 / exchange['dato']) for exchange in data['bmx']['series'][0]['datos']]
             ExchangeRate.objects.bulk_create(exchanges)
 
             return JsonResponse({'error': 'ninguno', 'status': 200 }, safe=False)
