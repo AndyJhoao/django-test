@@ -48,12 +48,12 @@ SUPERUSER : admin
 PASSWORD : 123456
 
 `DONT ACCESS`
-User 1 without `corredor`: 
+User 1 without `corredor` group: 
 Username : `test2`
 Password : `prueba123`
 
 `ACCESS`
-User 2 with `corredor`: 
+User 2 with `corredor` group: 
 Username : `test`
 Password : `prueba123`
 
