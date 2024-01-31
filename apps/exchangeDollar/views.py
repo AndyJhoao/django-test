@@ -10,10 +10,10 @@ from decimal import Decimal
 from .models import ExchangeRate
 import base64
 
-# from django.shortcuts import render, redirect
-# from django.contrib.auth import authenticate
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate
 # from django.contrib.auth.decorators import user_passes_test
-# from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm
 
 def validateUser(request):
     authorization_header = request.headers.get('Authorization')
@@ -88,20 +88,13 @@ def consumirApi(request):
     except requests.exceptions.RequestException as error:
         return JsonResponse({'error': f'Error en la solicitud: {str(error)}'}, status=500, safe=False)
     
-# def home(request):
-#     if request.method == "GET":
-#         return render(request,'home.html',{
-#             'form': AuthenticationForm
-#         })
-#     elif request.method == "POST":
-#         user = authenticate(request, username=request.POST["username"], password=request.POST["password"])
-#         if user:
-#             user_group = user.groups.filter(name="corredor").exists()
-#             if user_group:
-#                 return redirect(request.POST.get('convert_to'))
-#             else:
-#                 return JsonResponse({'error': 'No estas en el grupo corredor', 'status': 404}, safe=False) 
-#         else:
-#             return JsonResponse({'error': 'No autenticado', 'status': 403}, safe=False)
+def home(request):
+    if request.method == "GET":
+        return render(request,'home.html',{
+            'form': AuthenticationForm
+        })
+    elif request.method == "POST":
+        return redirect(request.POST.get('convert_to'))
+        
 
 
