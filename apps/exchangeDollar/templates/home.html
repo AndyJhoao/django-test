@@ -4,26 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Api-Exchanges</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 3rem;
+            flex-direction: column;
+        }
+        .button {
+            padding: 0.5rem;
+        }
+    </style>
 </head>
-<body>
-    <!-- <form action="usd2mxn/" method="post">
-        {% csrf_token %}
-        {{form}}
-        <button type="submit">USD TO MXN</button>
-    </form>
 
-    <form action="mxn2usd/" method="post">
-        {% csrf_token %}
-        {{form}}
-        <button type="submit">MXN TO USD</button>
-    </form> -->
-    <form action="/" method="post">
-        {% csrf_token %}
+
+<body>
+    <section class='section'>
+        <h1>API Exchanges</h1>
+        <form action="/" method="post">
+            {% csrf_token %}
+        
+            {% comment %} {{ form }} {% endcomment %}
+            <button class='button' type="submit" name="convert_to" value="usd2mxn">USD TO MXN</button>
+            <button class='button' type="submit" name="convert_to" value="mxn2usd">MXN TO USD</button>
+        </form>
+    </section>
     
-        {{ form }}
-    
-        <button type="submit" name="convert_to" value="usd2mxn">USD TO MXN</button>
-        <button type="submit" name="convert_to" value="mxn2usd">MXN TO USD</button>
-    </form>
 </body>
 </html>

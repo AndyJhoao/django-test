@@ -10,10 +10,10 @@ from decimal import Decimal
 from .models import ExchangeRate
 import base64
 
-# from django.shortcuts import render, redirect
-# from django.contrib.auth import authenticate
-# from django.contrib.auth.decorators import user_passes_test
-# from django.contrib.auth.forms import AuthenticationForm
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate
+from django.utils.cache import add_never_cache_headers
+from django.contrib.auth.forms import AuthenticationForm
 
 def validateUser(request):
     authorization_header = request.headers.get('Authorization')
@@ -42,8 +42,8 @@ def validateUser(request):
         return {'error': 'No es valida la contraseña', 'status': 401}
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([permissions.IsAuthenticated])
 def mxn2usd(request):
     auth = validateUser(request)
     if auth['status'] == 200:
@@ -52,11 +52,13 @@ def mxn2usd(request):
         data_fix = [{'fecha': d.pop('date'), **d} for d in data]
         return JsonResponse({'error': 'ninguno', 'status': 200, 'data': data_fix}, safe=False)
     else:
-        return JsonResponse({'error': auth['error'], 'status': auth['status']}, safe=False)
+        response = JsonResponse({'error': auth['error'], 'status': auth['status']}, safe=False)
+        add_never_cache_headers(response)
+        return response
     
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([permissions.IsAuthenticated])
 def usd2mxn(request):
     auth = validateUser(request)
     if auth['status'] == 200:
@@ -65,7 +67,9 @@ def usd2mxn(request):
         data_fix = [{'fecha': d.pop('date'), **d} for d in data]
         return JsonResponse({'error': 'ninguno', 'status': 200, 'data': data_fix}, safe=False)
     else:
-        return JsonResponse({'error':  auth['error'], 'status': auth['status']}, safe=False)
+        response = JsonResponse({'error': auth['error'], 'status': auth['status']}, safe=False)
+        add_never_cache_headers(response)
+        return response
     
 def consumirApi(request):
     url = settings.URL_API
@@ -88,20 +92,13 @@ def consumirApi(request):
     except requests.exceptions.RequestException as error:
         return JsonResponse({'error': f'Error en la solicitud: {str(error)}'}, status=500, safe=False)
     
-# def home(request):
-#     if request.method == "GET":
-#         return render(request,'home.html',{
-#             'form': AuthenticationForm
-#         })
-#     elif request.method == "POST":
-#         user = authenticate(request, username=request.POST["username"], password=request.POST["password"])
-#         if user:
-#             user_group = user.groups.filter(name="corredor").exists()
-#             if user_group:
-#                 return redirect(request.POST.get('convert_to'))
-#             else:
-#                 return JsonResponse({'error': 'No estas en el grupo corredor', 'status': 404}, safe=False) 
-#         else:
-#             return JsonResponse({'error': 'No autenticado', 'status': 403}, safe=False)
+def home(request):
+    if request.method == "GET":
+        return render(request,'home.html',{
+            'form': AuthenticationForm
+        })
+    elif request.method == "POST":
+        return redirect(request.POST.get('convert_to'))
+        
 
 
